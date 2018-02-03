@@ -10,6 +10,8 @@
 #include "array_functions.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <algorithm>
 //============================================================================
 
 //============================================================================
@@ -23,9 +25,10 @@ struct entry {
 };
 
 //TODO add a global array of entry structs (global to this file)
-//TODO need new number. Not 10 entry list[10];
+entry *list;
 
 //TODO add variable to keep track of next available slot in array
+string filename;
 
 
 //zero out array that tracks words and their occurrences
@@ -35,8 +38,7 @@ void clearArray() {
 
 //how many unique words are in array
 int getArraySize() {
-
-	return 0;
+	return 0;//sizeof(list);
 }
 
 //get data at a particular location
@@ -56,12 +58,31 @@ int getArrayWord_NumbOccur_At(int i) {
  *         true: otherwise*/
 bool processFile(fstream &myfstream) {
 
-	return false;
+	ifstream myInputFile;
+	myInputFile.open(filename.c_str(), ios::in);
+
+	if (myInputFile.is_open()) {
+		string line;
+
+		while (!myfstream.eof()) {
+			getline(myfstream, line);
+			processLine(line);
+		}
+		myInputFile.close();
+		return true;
+	} else {
+		return false;
+	}
 }
 
 /*take 1 line and extract all the tokens from it
  feed each token to processToken for recording*/
 void processLine(string &myString) {
+	istringstream iss(myString);
+	string word;
+	while (iss >> word) {
+		processToken(word);
+	}
 
 }
 
@@ -75,10 +96,20 @@ void processToken(std::string &token) {
 bool openFile(std::fstream& myfile, const std::string& myFileName,
 		std::ios_base::openmode mode) {
 
+	filename = myFileName;
 	ifstream myInputFile;
 	myInputFile.open(myFileName.c_str(), ios::in);
 
 	if (myInputFile.is_open()) {
+		/*string line;
+
+		 while (!myInputFile.eof()) {
+		 getline(myInputFile, line);
+
+		 cout << line;
+
+		 }*/
+		myInputFile.close();
 		return true;
 	} else {
 		return false;
