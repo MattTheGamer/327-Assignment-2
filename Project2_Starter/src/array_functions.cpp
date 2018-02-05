@@ -102,6 +102,8 @@ void processLine(string &myString) {
 /*Keep track of how many times each token seen*/
 void processToken(std::string &token) {
 
+	//token.erase(std::remove(token.begin(), token.end(), ::isspace));
+	//token.erase(std::remove(token.begin(), token.end(), '.'));
 	cout << "Word is " << token << endl;
 
 	//TODO I need to remove any periods and whitespaces from
