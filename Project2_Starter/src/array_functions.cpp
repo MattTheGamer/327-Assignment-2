@@ -8,6 +8,7 @@
 //============================================================================
 //	TODO add necessary includes here
 #include "array_functions.h"
+#include "constants.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -25,20 +26,31 @@ struct entry {
 };
 
 //TODO add a global array of entry structs (global to this file)
-entry *list;
+entry *list = new entry[200];
 
 //TODO add variable to keep track of next available slot in array
 string filename;
+int size = 0;
+int index = 0;
 
+entry createEntry(string s, int n) {
+	entry word;
+	word.word = s;
+	word.occurences = n;
+	return word;
+}
 
 //zero out array that tracks words and their occurrences
 void clearArray() {
-
+	//cout << "Clearing array" << endl;
+	size = 0;
+	//cout << "Array size is now " << size << endl;
 }
 
 //how many unique words are in array
 int getArraySize() {
-	return 0;//sizeof(list);
+	//cout << "size of array is " << size << endl;
+	return size;
 }
 
 //get data at a particular location
@@ -81,6 +93,7 @@ void processLine(string &myString) {
 	istringstream iss(myString);
 	string word;
 	while (iss >> word) {
+		//cout<<word<<endl;
 		processToken(word);
 	}
 
@@ -89,6 +102,22 @@ void processLine(string &myString) {
 /*Keep track of how many times each token seen*/
 void processToken(std::string &token) {
 
+	cout << "Word is " << token << endl;
+
+	//TODO I need to remove any periods and whitespaces from
+	//these tokens
+
+	for (unsigned int i = 0; i < sizeof(list); i++) {
+		if (list[i].word == token) {
+			cout << "CONTAINED" << endl;
+			list[i].occurences++;
+		} else {
+			entry add = createEntry(token, 1);
+			list[index] = add;
+			index++;
+			size++;
+		}
+	}
 }
 
 /*if you are debugging the file must be in the project parent directory
