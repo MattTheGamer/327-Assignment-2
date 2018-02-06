@@ -26,7 +26,7 @@ struct entry {
 };
 
 //TODO add a global array of entry structs (global to this file)
-entry *list = new entry[200];
+entry *list = new entry[50];
 
 //TODO add variable to keep track of next available slot in array
 string filename;
@@ -56,7 +56,7 @@ int getArraySize() {
 //get data at a particular location
 string getArrayWordAt(int i) {
 
-	return "";
+	return list[i].word;
 }
 
 int getArrayWord_NumbOccur_At(int i) {
@@ -102,9 +102,9 @@ void processLine(string &myString) {
 /*Keep track of how many times each token seen*/
 void processToken(std::string &token) {
 
-	//token.erase(std::remove(token.begin(), token.end(), ::isspace));
+	//token.erase(std::remove(token.begin(), token.end(), ' '));
 	//token.erase(std::remove(token.begin(), token.end(), '.'));
-	cout << "Word is " << token << endl;
+	cout << "Word is: " << token << endl;
 
 	//TODO I need to remove any periods and whitespaces from
 	//these tokens
@@ -113,9 +113,14 @@ void processToken(std::string &token) {
 		if (list[i].word == token) {
 			cout << "CONTAINED" << endl;
 			list[i].occurences++;
-		} else {
+			cout << "Duplicate word: " << list[i].word << endl;
+			cout << "Occurrences: " << list[i].occurences << endl;
+			break;
+		} else if (i == sizeof(list) - 1) {
+			cout << "not in list" << endl;
 			entry add = createEntry(token, 1);
 			list[index] = add;
+			cout << "Added word: " << list[index].word << endl;
 			index++;
 			size++;
 		}
@@ -128,19 +133,10 @@ bool openFile(std::fstream& myfile, const std::string& myFileName,
 		std::ios_base::openmode mode) {
 
 	filename = myFileName;
-	ifstream myInputFile;
+	fstream myInputFile;
 	myInputFile.open(myFileName.c_str(), ios::in);
 
 	if (myInputFile.is_open()) {
-		/*string line;
-
-		 while (!myInputFile.eof()) {
-		 getline(myInputFile, line);
-
-		 cout << line;
-
-		 }*/
-		myInputFile.close();
 		return true;
 	} else {
 		return false;
@@ -149,6 +145,10 @@ bool openFile(std::fstream& myfile, const std::string& myFileName,
 
 /*iff myfile is open then close it*/
 void closeFile(std::fstream& myfile) {
+
+	if (myfile.is_open()) {
+		myfile.close();
+	}
 
 }
 
