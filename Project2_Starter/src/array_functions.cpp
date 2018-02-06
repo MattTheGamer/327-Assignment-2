@@ -18,6 +18,8 @@
 //============================================================================
 //	stuff you will need
 using namespace std;
+//i understand it's bad practice to use this, but I know for a fact nothing is
+//going to coincide with std for this project
 //============================================================================
 //TODO define a structure to track words and number of times they occur
 struct entry {
@@ -40,9 +42,22 @@ entry createEntry(string s, int n) {
 	return word;
 }
 
+bool icompare_pred(unsigned char a, unsigned char b) {
+	return std::tolower(a) == std::tolower(b);
+}
+
+bool icompare(std::string const& a, std::string const& b) {
+	if (a.length() == b.length()) {
+		return std::equal(b.begin(), b.end(), a.begin(), icompare_pred);
+	} else {
+		return false;
+	}
+}
+
 //zero out array that tracks words and their occurrences
 void clearArray() {
 	//cout << "Clearing array" << endl;
+	list = new entry[50];
 	size = 0;
 	//cout << "Array size is now " << size << endl;
 }
@@ -61,7 +76,7 @@ string getArrayWordAt(int i) {
 
 int getArrayWord_NumbOccur_At(int i) {
 
-	return 0;
+	return list[i].occurences;
 }
 
 /*loop through whole file, one line at a time
@@ -102,29 +117,40 @@ void processLine(string &myString) {
 /*Keep track of how many times each token seen*/
 void processToken(std::string &token) {
 
-	//token.erase(std::remove(token.begin(), token.end(), ' '));
-	//token.erase(std::remove(token.begin(), token.end(), '.'));
-	cout << "Word is: " << token << endl;
+	for (unsigned int k = 0; k < sizeof(token); k++) {
+		if (token[k] == '.' || token[k] == ' ') {
+			cout << "Period/Space found. Removing char." << endl;
+			token.erase(k, 1);
+			k = 0;
+		}
+	}
 
 	//TODO I need to remove any periods and whitespaces from
 	//these tokens
 
 	for (unsigned int i = 0; i < sizeof(list); i++) {
-		if (list[i].word == token) {
+
+		if (icompare(list[i].word, token)) {
 			cout << "CONTAINED" << endl;
 			list[i].occurences++;
 			cout << "Duplicate word: " << list[i].word << endl;
 			cout << "Occurrences: " << list[i].occurences << endl;
 			break;
-		} else if (i == sizeof(list) - 1) {
-			cout << "not in list" << endl;
+		}
+
+		else if (i == sizeof(list) - 1 && sizeof(token) > 0 && token != ""
+				&& token != "\r") {
+			//cout << "not in list" << endl;
 			entry add = createEntry(token, 1);
 			list[index] = add;
 			cout << "Added word: " << list[index].word << endl;
 			index++;
 			size++;
+			cout << "Array size: " << size << endl;
 		}
+
 	}
+	//cout << "Word is: " << token << endl;
 }
 
 /*if you are debugging the file must be in the project parent directory
@@ -158,6 +184,19 @@ void closeFile(std::fstream& myfile) {
  * 			SUCCESS if all data is written and outputfilename closes OK
  * */
 int writeArraytoFile(const std::string &outputfilename) {
+
+//	//TODO make constants work
+//	ofstream myOutputFile;
+//	//myOutputFile.open(outputfilename.c_str());
+//
+//	if (!myOutputFile.is_open()) {
+//		return -2;	//FAIL_FILE_DID_NOT_OPEN;
+//	} else if (size == 0) {
+//		return -3;
+//	} else {
+//		myOutputFile << list;
+//		return 0;
+//	}
 
 	return 0;
 }
