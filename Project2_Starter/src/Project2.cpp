@@ -62,7 +62,7 @@ bool diff_files(string testoutput,string correctfile, string testnumb = "" ){
 	if (fgets(buff, sizeof(buff), in)==NULL)
 		return true;
 	else
-		cout << buff;
+		//cout << buff;
 
 	pclose(in);
 	return false;
@@ -70,7 +70,7 @@ bool diff_files(string testoutput,string correctfile, string testnumb = "" ){
 
 //gets rid of the legacy .out files
 void remove_file_debris(){
-	//popen("rm ./output/*.out", "r");
+	popen("rm ./output/*.out", "r");
 }
 
 //worth 17 points
