@@ -13,25 +13,24 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include "utilities.h"
 //============================================================================
 
 //============================================================================
 //	stuff you will need
 using namespace std;
+using namespace constants;
 //i understand it's bad practice to use this, but I know for a fact nothing is
 //going to coincide with std for this project
 //============================================================================
-//TODO define a structure to track words and number of times they occur
+
 struct entry {
 	string word;
 	int occurences;
 };
 
-//TODO add a global array of entry structs (global to this file)
-entry *list = new entry[50];
+entry *list = new entry[MAX_WORDS];
 
-//TODO add variable to keep track of next available slot in array
-string filename;
 int size = 0;
 int index = 0;
 
@@ -42,13 +41,13 @@ entry createEntry(string s, int n) {
 	return word;
 }
 
-bool icompare_pred(unsigned char a, unsigned char b) {
+bool compare_pred(unsigned char a, unsigned char b) {
 	return std::tolower(a) == std::tolower(b);
 }
 
-bool icompare(std::string const& a, std::string const& b) {
+bool compare(std::string const& a, std::string const& b) {
 	if (a.length() == b.length()) {
-		return std::equal(b.begin(), b.end(), a.begin(), icompare_pred);
+		return std::equal(b.begin(), b.end(), a.begin(), compare_pred);
 	} else {
 		return false;
 	}
@@ -85,17 +84,13 @@ int getArrayWord_NumbOccur_At(int i) {
  *         true: otherwise*/
 bool processFile(fstream &myfstream) {
 
-	ifstream myInputFile;
-	myInputFile.open(filename.c_str(), ios::in);
-
-	if (myInputFile.is_open()) {
+	if (myfstream.is_open()) {
 		string line;
 
 		while (!myfstream.eof()) {
 			getline(myfstream, line);
 			processLine(line);
 		}
-		myInputFile.close();
 		return true;
 	} else {
 		return false;
@@ -117,36 +112,26 @@ void processLine(string &myString) {
 /*Keep track of how many times each token seen*/
 void processToken(std::string &token) {
 
-	for (unsigned int k = 0; k < sizeof(token); k++) {
-		if (token[k] == '.' || token[k] == ' ') {
-			cout << "Period/Space found. Removing char." << endl;
-			token.erase(k, 1);
-			k = 0;
-		}
-	}
-
-	//TODO I need to remove any periods and whitespaces from
-	//these tokens
+	strip_unwanted_chars(token);
 
 	for (unsigned int i = 0; i < sizeof(list); i++) {
 
-		if (icompare(list[i].word, token)) {
-			cout << "CONTAINED" << endl;
+		if (compare(list[i].word, token)) {
+			//cout << "CONTAINED" << endl;
 			list[i].occurences++;
-			cout << "Duplicate word: " << list[i].word << endl;
-			cout << "Occurrences: " << list[i].occurences << endl;
+			//cout << "Duplicate word: " << list[i].word << endl;
+			//cout << "Occurrences: " << list[i].occurences << endl;
 			break;
 		}
 
-		else if (i == sizeof(list) - 1 && sizeof(token) > 0 && token != ""
-				&& token != "\r") {
+		else if (i == sizeof(list) - 1 && sizeof(token) > 0) {
 			//cout << "not in list" << endl;
 			entry add = createEntry(token, 1);
 			list[index] = add;
-			cout << "Added word: " << list[index].word << endl;
+			//cout << "Added word: " << list[index].word << endl;
 			index++;
 			size++;
-			cout << "Array size: " << size << endl;
+			//cout << "Array size: " << size << endl;
 		}
 
 	}
@@ -158,7 +143,6 @@ void processToken(std::string &token) {
 bool openFile(std::fstream& myfile, const std::string& myFileName,
 		std::ios_base::openmode mode) {
 
-	filename = myFileName;
 	fstream myInputFile;
 	myInputFile.open(myFileName.c_str(), ios::in);
 
@@ -185,20 +169,35 @@ void closeFile(std::fstream& myfile) {
  * */
 int writeArraytoFile(const std::string &outputfilename) {
 
-//	//TODO make constants work
-//	ofstream myOutputFile;
-//	//myOutputFile.open(outputfilename.c_str());
-//
-//	if (!myOutputFile.is_open()) {
-//		return -2;	//FAIL_FILE_DID_NOT_OPEN;
-//	} else if (size == 0) {
-//		return -3;
-//	} else {
-//		myOutputFile << list;
-//		return 0;
-//	}
+	if(size == 0)
+	{
+		cout<<"FAIL NO DATA"<<endl;
+		return FAIL_NO_ARRAY_DATA;
+	}
+	else
+	{
+		ofstream output;
+		output.open(outputfilename.c_str(), ios::out);
 
-	return 0;
+		if(!output.is_open())
+		{
+			cout<<"FAIL DID NOT OPEN"<<endl;
+			return FAIL_FILE_DID_NOT_OPEN;
+		}
+		else
+		{
+			cout<<"FILE IS OPEN"<<endl;
+
+			for(int i =0; i < size; i++)
+			{
+				output<<list[i].word<<" "<<list[i].occurences<<endl;
+				cout<<list[i].word<<" "<<list[i].occurences<<endl;
+			}
+			return SUCCESS;
+		}
+	}
+
+	//return 0;
 }
 
 /*
@@ -208,6 +207,51 @@ int writeArraytoFile(const std::string &outputfilename) {
  * You are provided with a myentry compare function in the cpp file
  */
 void sortArray(constants::sortOrder so) {
+
+	switch (so) {
+	case NONE:
+		break;
+	case ASCENDING:
+		for (int i = 0; i < size; i++) {
+
+			for (int k = 0; k < size - i - 1; k++) {
+				if (list[k].word > list[k + 1].word) {
+					entry temp;
+					temp = list[k];
+					list[k] = list[k + 1];
+					list[k + 1] = temp;
+				}
+			}
+		}
+		break;
+	case DESCENDING:
+		for (int i = 0; i < size; i++) {
+
+			for (int k = 0; k < size - i - 1; k++) {
+				if (list[k].word < list[k + 1].word) {
+					entry temp;
+					temp = list[k];
+					list[k] = list[k + 1];
+					list[k + 1] = temp;
+				}
+			}
+		}
+
+		break;
+	case NUMBER_OCCURRENCES:
+		for (int i = 0; i < size; i++) {
+
+			for (int k = 0; k < size - i - 1; k++) {
+				if (list[k].occurences > list[k + 1].occurences) {
+					entry temp;
+					temp = list[k];
+					list[k] = list[k + 1];
+					list[k + 1] = temp;
+				}
+			}
+		}
+		break;
+	}
 
 }
 
