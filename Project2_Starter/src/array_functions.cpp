@@ -40,18 +40,6 @@ entry createEntry(string s, int n) {
 	return word;
 }
 
-bool compare_pred(unsigned char a, unsigned char b) {
-	return std::tolower(a) == std::tolower(b);
-}
-
-bool compare(std::string const& a, std::string const& b) {
-	if (a.length() == b.length()) {
-		return std::equal(b.begin(), b.end(), a.begin(), compare_pred);
-	} else {
-		return false;
-	}
-}
-
 //zero out array that tracks words and their occurrences
 void clearArray() {
 	//cout << "Clearing array" << endl;
@@ -115,7 +103,14 @@ bool checkPrevious(std::string &token)
 {
 	for(int i = 0; i<getArraySize(); i++)
 	{
-		if(compare(list[i].word, token))
+
+		string str1 = list[i].word;
+		string str2 = token;
+
+		toUpper(str1);
+		toUpper(str2);
+
+		if(str1==str2)
 		{
 			list[i].occurences++;
 			return true;
@@ -253,10 +248,6 @@ void sortArray(constants::sortOrder so) {
 					list[k + 1] = temp;
 				}
 			}
-		}
-		for(int i =0; i < size; i++)
-		{
-			cout<<list[i].word<<" "<<list[i].occurences<<endl;
 		}
 		break;
 	case DESCENDING:
