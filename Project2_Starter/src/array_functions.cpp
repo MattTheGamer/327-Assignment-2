@@ -42,16 +42,13 @@ entry createEntry(string s, int n) {
 
 //zero out array that tracks words and their occurrences
 void clearArray() {
-	//cout << "Clearing array" << endl;
 	list = new entry[MAX_WORDS];
 	size = 0;
 	index = 0;
-	//cout << "Array size is now " << size << endl;
 }
 
 //how many unique words are in array
 int getArraySize() {
-	//cout << "size of array is " << size << endl;
 	return size;
 }
 
