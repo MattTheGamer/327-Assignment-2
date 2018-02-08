@@ -73,7 +73,6 @@ int getArrayWord_NumbOccur_At(int i) {
 bool processFile(fstream &myfstream) {
 
 	if (myfstream.is_open()) {
-		//cout<<"FILE OPEN"<<endl;
 		string line;
 
 		while (!myfstream.eof()) {
@@ -82,7 +81,6 @@ bool processFile(fstream &myfstream) {
 		}
 		return true;
 	} else {
-		//cout<<"DID NOT OPEN FILE"<<endl;
 		return false;
 	}
 }
@@ -93,16 +91,13 @@ void processLine(string &myString) {
 	istringstream iss(myString);
 	string word;
 	while (iss >> word) {
-		//cout<<word<<endl;
 		processToken(word);
 	}
 
 }
 
-bool checkPrevious(std::string &token)
-{
-	for(int i = 0; i<getArraySize(); i++)
-	{
+bool checkPrevious(std::string &token) {
+	for (int i = 0; i < getArraySize(); i++) {
 
 		string str1 = list[i].word;
 		string str2 = token;
@@ -110,8 +105,7 @@ bool checkPrevious(std::string &token)
 		toUpper(str1);
 		toUpper(str2);
 
-		if(str1==str2)
-		{
+		if (str1 == str2) {
 			list[i].occurences++;
 			return true;
 		}
@@ -125,41 +119,14 @@ void processToken(std::string &token) {
 
 	strip_unwanted_chars(token);
 
-	if (!token.empty())
-	{
-	if(!checkPrevious(token))
-	{
-		list[index].word=token;
-		list[index].occurences=1;
-		index++;
-		size++;
+	if (!token.empty()) {
+		if (!checkPrevious(token)) {
+			list[index].word = token;
+			list[index].occurences = 1;
+			index++;
+			size++;
+		}
 	}
-	}
-
-
-//	for (unsigned int i = 0; i < sizeof(list); i++) {
-//		cout<<sizeof(list)<<endl;
-//		cout<<"Comparing: "<<token<<" and "<<list[i].word<<endl;
-//		if (compare(list[i].word, token)) {
-//			//cout << "CONTAINED" << endl;
-//			list[i].occurences++;
-//			//cout << "Duplicate word: " << list[i].word << endl;
-//			//cout << "Occurrences: " << list[i].occurences << endl;
-//			break;
-//		}
-//
-//		else if (i == sizeof(list) - 1 && sizeof(token) > 0) {
-//			//cout << "not in list" << endl;
-//			entry add = createEntry(token, 1);
-//			list[index] = add;
-//			cout << "Added word: " << list[index].word << endl;
-//			index++;
-//			size++;
-//			//cout << "Array size: " << size << endl;
-//		}
-//
-//	}
-	//cout << "Word is: " << token << endl;
 }
 
 /*if you are debugging the file must be in the project parent directory
@@ -167,14 +134,9 @@ void processToken(std::string &token) {
 bool openFile(std::fstream& myfile, const std::string& myFileName,
 		std::ios_base::openmode mode) {
 
-	fstream myInputFile;
 	myfile.open(myFileName.c_str(), ios::in);
 
-	if (myfile.is_open()) {
-		return true;
-	} else {
-		return false;
-	}
+	return myfile.is_open();
 }
 
 /*iff myfile is open then close it*/
@@ -194,27 +156,20 @@ void closeFile(std::fstream& myfile) {
 int writeArraytoFile(const std::string &outputfilename) {
 
 	if (size == 0) {
-		//cout << "FAIL NO DATA" << endl;
 		return FAIL_NO_ARRAY_DATA;
 	} else {
 		ofstream output;
 		output.open(outputfilename.c_str(), ios::out);
 
 		if (!output.is_open()) {
-			//cout << "FAIL DID NOT OPEN" << endl;
 			return FAIL_FILE_DID_NOT_OPEN;
 		} else {
-			//cout << "FILE IS OPEN" << endl;
-
-			for (int i = 0; i < size; i++) {
+			for (int i = 0; i < getArraySize(); i++) {
 				output << list[i].word << " " << list[i].occurences << endl;
-				//cout << list[i].word << " " << list[i].occurences << endl;
 			}
 			return SUCCESS;
 		}
 	}
-
-	//return 0;
 }
 
 /*
@@ -227,21 +182,19 @@ void sortArray(constants::sortOrder so) {
 
 	switch (so) {
 	case NONE:
-		//cout << "NONE" << endl;
 		break;
 	case ASCENDING:
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < getArraySize(); i++) {
 
-			for (int k = 0; k < size - i - 1; k++) {
+			for (int k = 0; k < getArraySize() - i - 1; k++) {
 
-				string str1= list[k].word;
-				string str2 = list[k+1].word;
+				string str1 = list[k].word;
+				string str2 = list[k + 1].word;
 
 				toUpper(str1);
 				toUpper(str2);
 
 				if (str1 > str2) {
-					//cout<<"Sorting: "<<list[k].word<< " and "<<list[k+1].word<<endl;
 					entry temp;
 					temp = list[k];
 					list[k] = list[k + 1];
@@ -251,10 +204,17 @@ void sortArray(constants::sortOrder so) {
 		}
 		break;
 	case DESCENDING:
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < getArraySize(); i++) {
 
-			for (int k = 0; k < size - i - 1; k++) {
-				if (list[k].word < list[k + 1].word) {
+			for (int k = 0; k < getArraySize() - i - 1; k++) {
+
+				string str1 = list[k].word;
+				string str2 = list[k + 1].word;
+
+				toUpper(str1);
+				toUpper(str2);
+
+				if (str1 < str2) {
 					entry temp;
 					temp = list[k];
 					list[k] = list[k + 1];
@@ -262,12 +222,11 @@ void sortArray(constants::sortOrder so) {
 				}
 			}
 		}
-
 		break;
 	case NUMBER_OCCURRENCES:
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < getArraySize(); i++) {
 
-			for (int k = 0; k < size - i - 1; k++) {
+			for (int k = 0; k < getArraySize() - i - 1; k++) {
 				if (list[k].occurences > list[k + 1].occurences) {
 					entry temp;
 					temp = list[k];
